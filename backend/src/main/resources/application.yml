@@ -1,46 +1,21 @@
 server:
-
-  port: ${PORT:8080}
-
+  port: 8080
 
 spring:
-
-  application:
-
-    name: alex-platform
-
-
   datasource:
-
     url: ${DATABASE_URL}
-
     username: ${DATABASE_USERNAME}
-
     password: ${DATABASE_PASSWORD}
-
+    driver-class-name: org.postgresql.Driver
 
   jpa:
-
     hibernate:
-
       ddl-auto: update
-
+    show-sql: false
     properties:
-
       hibernate:
-
         dialect: org.hibernate.dialect.PostgreSQLDialect
 
-
-
-ollama:
-
-  url: ${OLLAMA_URL:http://localhost:11434}
-
-  model: ${OLLAMA_MODEL:qwen2.5-coder:7b}
-
-
-
-qdrant:
-
-  url: ${QDRANT_URL:http://localhost:6333}
+logging:
+  level:
+    root: INFO
