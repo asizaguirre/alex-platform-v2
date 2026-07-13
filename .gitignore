@@ -1,0 +1,15 @@
+target/
+*.log
+
+.env
+
+.idea/
+.vscode/
+
+node_modules/
+
+*.class
+
+.DS_Store
+
+docker-volumes/
