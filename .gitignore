@@ -1,15 +1,32 @@
+# Java
+
 target/
-*.log
+
+*.jar
+
+
+# IDE
+
+.idea/
+
+.vscode/
+
+
+# Environment
 
 .env
 
-.idea/
-.vscode/
 
-node_modules/
+# Logs
 
-*.class
+*.log
+
+
+# OS
 
 .DS_Store
 
-docker-volumes/
+
+# Backups
+
+*.backup.*
