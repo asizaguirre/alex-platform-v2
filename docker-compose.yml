@@ -1,0 +1,26 @@
+version: '3.9'
+
+services:
+  alex-platform-v2:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    image: alex-platform-v2:latest
+    ports:
+      - "8080:8080"
+    env_file:
+      - .env
+    environment:
+      - PORT=8080
+      - OLLAMA_URL=${OLLAMA_URL:-http://localhost:11434}
+      - OLLAMA_MODEL=${OLLAMA_MODEL:-qwen2.5-coder:7b}
+    depends_on:
+      - ollama
+
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ollama
+    ports:
+      - "11434:11434"
+    restart: unless-stopped
+    command: ["server"]

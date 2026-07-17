@@ -1,21 +1,13 @@
 server:
-  port: 8080
+  port: ${PORT:8080}
+  compression:
+    enabled: true
+    mime-types: text/html,text/xml,text/plain,text/css,text/javascript,application/javascript,application/json
+    min-response-size: 1024
 
 spring:
-  datasource:
-    url: ${SPRING_DATASOURCE_URL}
-    username: ${SPRING_DATASOURCE_USERNAME}
-    password: ${SPRING_DATASOURCE_PASSWORD}
-    driver-class-name: org.postgresql.Driver
-
-  jpa:
-    hibernate:
-      ddl-auto: update
-    show-sql: false
-
-    properties:
-      hibernate:
-        format_sql: true
+  application:
+    name: alex-platform
 
 ollama:
   url: ${OLLAMA_URL:http://localhost:11434}
@@ -25,7 +17,6 @@ logging:
   level:
     root: INFO
     com.alexai: DEBUG
-
 
 management:
   endpoints:

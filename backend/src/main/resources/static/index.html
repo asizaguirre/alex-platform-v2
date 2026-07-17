@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AlEx Platform v2 - Dashboard Inteligente</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+</head>
+<body>
+  <div class="app-container">
+    <header class="app-header">
+      <div class="header-logo">
+        <div class="logo-orb"></div>
+        <h1>AlEx Platform <span>v2.0</span></h1>
+      </div>
+      <p class="header-subtitle">Ecossistema Inteligente de Agentes Autônomos (Alia & Alex)</p>
+
+      <!-- Admin Zone: Login + Shutdown -->
+      <div class="admin-zone">
+        <!-- Google Sign-In (compact) -->
+        <div id="adminLoginArea">
+          <div id="g_id_onload"
+               data-client_id="800464070591-33nvvitct598mb53dccehl15q8cjm4m9.apps.googleusercontent.com"
+               data-callback="handleGoogleLogin"
+               data-auto_prompt="false">
+          </div>
+          <div class="g_id_signin"
+               data-type="icon"
+               data-shape="circle"
+               data-theme="filled_black"
+               data-size="medium">
+          </div>
+        </div>
+
+        <!-- Admin info + Shutdown button (hidden until authenticated) -->
+        <div id="adminPanel" class="admin-panel" style="display: none;">
+          <div class="admin-info">
+            <img id="adminAvatar" class="admin-avatar" src="" alt="Admin" />
+            <span id="adminName" class="admin-name"></span>
+          </div>
+          <button id="shutdownBtn" class="btn-shutdown" title="Desligar Plataforma">
+            <span class="shutdown-icon">⏻</span>
+            <span class="shutdown-text">Desligar</span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <div class="dashboard-grid">
+      <!-- Painel Esquerdo: Configurações & Fontes de Dados -->
+      <aside class="sidebar-panel glass-card">
+        <div class="sidebar-section">
+          <h2><span class="icon">👤</span> Selecionar Agente</h2>
+          <div class="agent-selector">
+            <label class="agent-card alex-card">
+              <input type="radio" name="agent" value="alex" checked />
+              <div class="agent-card-content">
+                <span class="agent-avatar">👨‍💻</span>
+                <div class="agent-details">
+                  <strong>Alex</strong>
+                  <span>Software Engineer</span>
+                </div>
+              </div>
+            </label>
+            <label class="agent-card alia-card">
+              <input type="radio" name="agent" value="alia" />
+              <div class="agent-card-content">
+                <span class="agent-avatar">👩‍💼</span>
+                <div class="agent-details">
+                  <strong>Alia</strong>
+                  <span>Product & RAG Specialist</span>
+                </div>
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <div class="sidebar-section">
+          <h2><span class="icon">📁</span> Ingestão RAG (Comportamento)</h2>
+          <p class="section-desc">Envie documentos para guiar o comportamento de Alia ou Alex.</p>
+          <form id="ragUploadForm" class="upload-form">
+            <div class="file-drop-area">
+              <input type="file" id="ragFile" required />
+              <span class="file-msg">Selecionar arquivo (PDF, TXT, DOCX)</span>
+            </div>
+            <button type="submit" class="btn-secondary">Enviar para o RAG</button>
+          </form>
+          <div id="ragStatus" class="mini-status"></div>
+        </div>
+
+        <div class="sidebar-section">
+          <h2><span class="icon">💾</span> Fonte da Verdade (DB Central)</h2>
+          <p class="section-desc">Insira registros na base de dados centralizada.</p>
+          <div class="db-form">
+            <input type="text" id="dbTitle" placeholder="Título (ex: Regra de Frete)" />
+            <textarea id="dbContent" rows="2" placeholder="Conteúdo do fato/registro..."></textarea>
+            <button id="dbSaveBtn" class="btn-secondary">Adicionar ao DB</button>
+          </div>
+          <div id="dbStatus" class="mini-status"></div>
+        </div>
+
+        <div class="sidebar-section">
+          <h2><span class="icon">🤖</span> Criador de Agente Específico</h2>
+          <p class="section-desc">Instrua Alia a instanciar um novo agente sob demanda.</p>
+          <div class="agent-creator-form">
+            <input type="text" id="customAgentName" placeholder="Nome do Agente (ex: CRM Agent)" />
+            <input type="text" id="customAgentRole" placeholder="Função / Objetivo" />
+            <button id="createAgentBtn" class="btn-secondary">Criar Agente</button>
+          </div>
+          <div id="creatorStatus" class="mini-status"></div>
+        </div>
+      </aside>
+
+      <!-- Painel Central: Chat e Sandbox de Telas Dinâmicas -->
+      <main class="main-panel">
+        <!-- Interface de Chat -->
+        <section class="chat-section glass-card">
+          <div class="chat-header">
+            <h2>💬 Central de Mensagens</h2>
+            <div id="chatStatusText" class="chat-status-indicator">Pronto</div>
+          </div>
+          
+          <div class="chat-history" id="chatHistory">
+            <div class="chat-bubble assistant">
+              <strong>ALIA & ALEX</strong>
+              <div>Olá! Eu sou a Alia (especialista em RAG e requisitos) e este é o Alex (engenheiro de software e otimizador de performance). Peça para a Alia criar uma tela para as necessidades do seu cliente ou envie arquivos para nosso banco de conhecimento!</div>
+            </div>
+          </div>
+
+          <div class="chat-input-area">
+            <textarea id="message" placeholder="Peça para a Alia criar uma nova tela (ex: 'Alia, crie uma tela de agendamento de consultas')..." rows="3"></textarea>
+            <div class="input-actions">
+              <span id="status" class="status-msg"></span>
+              <button id="sendBtn" class="btn-primary">Enviar Mensagem</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- Sandbox de Telas Dinâmicas (Aparece dinamicamente) -->
+        <section class="sandbox-section glass-card" id="sandboxSection" style="display: none;">
+          <div class="sandbox-header">
+            <h2>🖥️ Sandbox de Telas Dinâmicas (Gerada por Alex)</h2>
+            <button id="finishScreenBtn" class="btn-danger">Finalizar e Excluir Página</button>
+          </div>
+          <div class="sandbox-container" id="sandboxContainer">
+            <!-- Conteúdo gerado dinamicamente será inserido aqui -->
+          </div>
+        </section>
+      </main>
+
+      <!-- Painel Direito: Pipeline do Alex & Métricas -->
+      <aside class="right-panel glass-card">
+        <h2>⚙️ Alex Pipeline Monitor</h2>
+        <p class="section-desc">Visualização do fluxo de deploy e otimização em tempo real.</p>
+        
+        <div class="pipeline-stepper">
+          <div class="step" id="step-ingest">
+            <div class="step-icon">1</div>
+            <div class="step-label">Ingestão</div>
+          </div>
+          <div class="step" id="step-gen">
+            <div class="step-icon">2</div>
+            <div class="step-label">Síntese</div>
+          </div>
+          <div class="step" id="step-opt">
+            <div class="step-icon">3</div>
+            <div class="step-label">Otimização</div>
+          </div>
+          <div class="step" id="step-test">
+            <div class="step-icon">4</div>
+            <div class="step-label">Testes</div>
+          </div>
+          <div class="step" id="step-deploy">
+            <div class="step-icon">5</div>
+            <div class="step-label">Deploy</div>
+          </div>
+        </div>
+
+        <div class="pipeline-logs-wrapper">
+          <h3>Logs da Pipeline</h3>
+          <div class="pipeline-logs" id="pipelineLogs">
+            <div class="log-entry system">Aguardando solicitação para iniciar pipeline...</div>
+          </div>
+        </div>
+
+        <div class="metrics-grid">
+          <div class="metric-card">
+            <span class="metric-val" id="metric-build">--</span>
+            <span class="metric-lbl">Build Time</span>
+          </div>
+          <div class="metric-card">
+            <span class="metric-val" id="metric-size">--</span>
+            <span class="metric-lbl">Tamanho Código</span>
+          </div>
+          <div class="metric-card">
+            <span class="metric-val highlight" id="metric-savings">--</span>
+            <span class="metric-lbl">Redução Memória</span>
+          </div>
+          <div class="metric-card">
+            <span class="metric-val" id="metric-perf">--</span>
+            <span class="metric-lbl">Lighthouse Perf</span>
+          </div>
+        </div>
+
+        <div class="optimization-diff-wrapper">
+          <h3>Otimização de Código</h3>
+          <pre class="diff-view" id="diffView">Nenhuma otimização pendente.</pre>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="toast"></div>
+
+  <!-- Shutdown Confirmation Modal -->
+  <div id="shutdownModal" class="shutdown-modal-overlay" style="display: none;">
+    <div class="shutdown-modal glass-card">
+      <div class="shutdown-modal-icon">⏻</div>
+      <h2>Desligar AlEx Platform v2?</h2>
+      <p>Esta ação irá encerrar todos os serviços da plataforma. Apenas administradores autorizados podem executar este comando.</p>
+      <div id="shutdownConfirmInfo" class="shutdown-confirm-info"></div>
+      <div class="shutdown-modal-actions">
+        <button id="shutdownCancel" class="btn-secondary">Cancelar</button>
+        <button id="shutdownConfirm" class="btn-shutdown-confirm">Confirmar Shutdown</button>
+      </div>
+      <div id="shutdownProgress" class="shutdown-progress" style="display: none;">
+        <div class="shutdown-progress-bar"></div>
+        <p id="shutdownMessage">Desligando plataforma...</p>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
