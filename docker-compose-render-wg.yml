@@ -1,0 +1,50 @@
+version: '3.9'
+
+services:
+  # Render Deployment with WireGuard
+  alex-platform-v2:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    image: alex-platform-v2:latest
+    ports:
+      - "${PORT:-8080}:8080"
+    environment:
+      - PORT=${PORT:-8080}
+      # Connect via WireGuard tunnel to local Ollama
+      - OLLAMA_URL=${OLLAMA_URL:-http://10.0.0.1:11434}
+      - OLLAMA_MODEL=${OLLAMA_MODEL:-qwen2.5-coder:7b}
+    depends_on:
+      - wireguard
+    networks:
+      - app-net
+    cap_add:
+      - NET_ADMIN
+
+  # WireGuard Client (connects to local WireGuard server)
+  wireguard:
+    image: linuxserver/wireguard:latest
+    container_name: wg-client
+    cap_add:
+      - NET_ADMIN
+      - SYS_MODULE
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Sao_Paulo
+    volumes:
+      - ./wireguard-config:/config
+      - /lib/modules:/lib/modules
+    sysctls:
+      - net.ipv4.ip_forward=1
+      - net.ipv4.conf.all.src_valid_mark=1
+    restart: unless-stopped
+    networks:
+      - app-net
+    dns:
+      - 8.8.8.8
+      - 8.8.4.4
+
+networks:
+  app-net:
+    driver: bridge
