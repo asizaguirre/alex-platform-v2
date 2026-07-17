@@ -1,7 +1,7 @@
 version: '3.9'
 
 services:
-  # Render Deployment with WireGuard
+  # Backend da Alex Platform v2 com suporte a WebSocket
   alex-platform-v2:
     build:
       context: ./backend
@@ -11,7 +11,8 @@ services:
       - "${PORT:-8080}:8080"
     environment:
       - PORT=${PORT:-8080}
-      # Connect via WireGuard tunnel to local Ollama
+      - WS_URL=${WS_URL:-ws://0.0.0.0:8080/ws}
+      # Conexão via WireGuard para Ollama local
       - OLLAMA_URL=${OLLAMA_URL:-http://10.0.0.1:11434}
       - OLLAMA_MODEL=${OLLAMA_MODEL:-qwen2.5-coder:7b}
     depends_on:
@@ -21,7 +22,7 @@ services:
     cap_add:
       - NET_ADMIN
 
-  # WireGuard Client (connects to local WireGuard server)
+  # Cliente WireGuard (conecta ao servidor WireGuard local)
   wireguard:
     image: linuxserver/wireguard:latest
     container_name: wg-client
