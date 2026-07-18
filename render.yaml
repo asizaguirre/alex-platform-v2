@@ -6,3 +6,4 @@ services:
     dockerfilePath: backend/Dockerfile.render
     plan: starter
     autoDeploy: true
+
