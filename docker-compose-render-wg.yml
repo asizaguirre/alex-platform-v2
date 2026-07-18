@@ -46,7 +46,7 @@ services:
       - 8.8.8.8
       - 8.8.4.4
 
-  # Ollama com pull automático do modelo
+  # Ollama
   ollama:
     image: ollama/ollama
     container_name: ollama
@@ -54,8 +54,6 @@ services:
       - "11434:11434"
     volumes:
       - ollama-data:/root/.ollama
-    command: >
-      sh -c "ollama pull qwen2.5-coder:7b && ollama serve"
     networks:
       - app-net
 
