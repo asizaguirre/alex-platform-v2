@@ -12,10 +12,11 @@ services:
     environment:
       - PORT=${PORT:-8080}
       - WS_URL=${WS_URL:-ws://0.0.0.0:8080/ws}
-      - OLLAMA_URL=${OLLAMA_URL:-http://localhost:11434}
+      - OLLAMA_URL=${OLLAMA_URL:-http://ollama:11434}
       - OLLAMA_MODEL=${OLLAMA_MODEL:-qwen2.5-coder:7b}
     depends_on:
       - wireguard
+      - ollama
     networks:
       - app-net
     cap_add:
@@ -45,6 +46,22 @@ services:
       - 8.8.8.8
       - 8.8.4.4
 
+  # Ollama com pull automático do modelo
+  ollama:
+    image: ollama/ollama
+    container_name: ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama-data:/root/.ollama
+    command: >
+      sh -c "ollama pull qwen2.5-coder:7b && ollama serve"
+    networks:
+      - app-net
+
 networks:
   app-net:
     driver: bridge
+
+volumes:
+  ollama-data:
